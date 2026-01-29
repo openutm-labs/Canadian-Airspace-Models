@@ -1,0 +1,255 @@
+================================================================================
+PROFILING RESULTS
+================================================================================
+Total execution time: 0.6711 seconds
+
+Top 50 functions by cumulative time:
+--------------------------------------------------------------------------------
+Function                                              Calls   Total(s)     Cum(s)   Per Call
+--------------------------------------------------------------------------------
+generator.py:291(generate_tracks)                         1     0.0000     0.6711   0.671110
+generator.py:135(generate_multiple_tracks)                1     0.0008     0.6711   0.671102
+bayesian_network.py:241(convert_sampled_data_to_..       32     0.0003     0.5814   0.018170
+dynamics.py:392(simulate_track)                          32     0.0815     0.5096   0.015924
+dynamics.py:179(integrate_single_time_step)           80000     0.3417     0.4276   0.000005
+bayesian_network.py:102(sample_transition_state_..       32     0.0003     0.0779   0.002435
+bayesian_network.py:124(_sample_dependent_variab..       32     0.0360     0.0771   0.002410
+bayesian_network.py:325(_process_transition_data..       32     0.0342     0.0667   0.002084
+utilities.py:69(sample_from_distribution)             24192     0.0374     0.0374   0.000002
+~:0(<built-in method builtins.min>)                  157286     0.0217     0.0217   0.000000
+~:0(<built-in method math.sin>)                      240000     0.0193     0.0193   0.000000
+numeric.py:2524(array_equal)                           7968     0.0074     0.0191   0.000002
+~:0(<built-in method math.cos>)                      240000     0.0191     0.0191   0.000000
+~:0(<method 'all' of 'numpy.ndarray' objects>)         8000     0.0018     0.0102   0.000001
+_methods.py:66(_all)                                   8000     0.0012     0.0084   0.000001
+~:0(<method 'reduce' of 'numpy.ufunc' objects>)        8512     0.0082     0.0082   0.000001
+~:0(<built-in method math.acos>)                      77254     0.0066     0.0066   0.000000
+~:0(<built-in method builtins.abs>)                   78756     0.0064     0.0064   0.000000
+~:0(<built-in method math.sqrt>)                      78660     0.0061     0.0061   0.000000
+validation.py:35(validate_track)                         32     0.0001     0.0054   0.000167
+~:0(<method 'copy' of 'numpy.ndarray' objects>)       18602     0.0047     0.0047   0.000000
+_arraysetops_impl.py:145(unique)                        851     0.0006     0.0041   0.000005
+validation.py:72(_check_vertical_rate_constraint..       32     0.0004     0.0037   0.000117
+_arraysetops_impl.py:348(_unique1d)                     851     0.0014     0.0032   0.000004
+_function_base_impl.py:994(gradient)                     32     0.0022     0.0032   0.000099
+bayesian_network.py:293(_convert_initial_conditi..       32     0.0009     0.0032   0.000099
+frame.py:698(__init__)                                    1     0.0011     0.0031   0.003090
+bayesian_network.py:75(sample_initial_state_cond..       32     0.0010     0.0024   0.000077
+~:0(<method 'append' of 'list' objects>)              13793     0.0018     0.0018   0.000000
+fromnumeric.py:89(_wrapreduction_any_all)               512     0.0005     0.0017   0.000003
+~:0(<built-in method numpy.array>)                      353     0.0016     0.0016   0.000005
+fromnumeric.py:2477(any)                                320     0.0002     0.0014   0.000004
+~:0(<method 'flatten' of 'numpy.ndarray' objects>)     4056     0.0013     0.0013   0.000000
+~:0(<built-in method numpy.asarray>)                  16072     0.0013     0.0013   0.000000
+validation.py:50(_check_altitude_constraint_viol..       32     0.0007     0.0012   0.000038
+_function_base_impl.py:1391(diff)                       224     0.0010     0.0012   0.000005
+~:0(<method 'tolist' of 'numpy.ndarray' objects>)      8320     0.0012     0.0012   0.000000
+utilities.py:122(convert_discrete_bin_to_continu..     3077     0.0012     0.0012   0.000000
+base.py:7659(ensure_index)                                4     0.0000     0.0011   0.000265
+bayesian_network.py:416(_create_simulation_contr..       32     0.0007     0.0010   0.000033
+base.py:475(__new__)                                      1     0.0000     0.0010   0.001022
+_function_base_impl.py:5289(delete)                      32     0.0005     0.0008   0.000026
+~:0(<built-in method numpy.asanyarray>)               10022     0.0008     0.0008   0.000000
+~:0(<built-in method numpy._core._multiarray_uma..      851     0.0006     0.0006   0.000001
+fromnumeric.py:2589(all)                                192     0.0001     0.0006   0.000003
+bayesian_network.py:376(_create_initial_kinemati..       32     0.0004     0.0006   0.000019
+multiarray.py:391(where)                               8819     0.0006     0.0006   0.000000
+numeric.py:2505(_array_equal_dispatcher)               7968     0.0005     0.0005   0.000000
+construction.py:517(sanitize_array)                       7     0.0000     0.0005   0.000075
+core.py:6879(is_masked)                                 851     0.0002     0.0005   0.000001
+================================================================================
+
+================================================================================
+RAW PROFILE OUTPUT
+================================================================================
+         1119387 function calls (1119281 primitive calls) in 0.664 seconds
+
+   Ordered by: cumulative time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.671    0.671 /Users/rpszonka/dev/openutm/openutm-airspace-models/src/cam_track_gen/generator.py:291(generate_tracks)
+        1    0.001    0.001    0.671    0.671 /Users/rpszonka/dev/openutm/openutm-airspace-models/src/cam_track_gen/generator.py:135(generate_multiple_tracks)
+       32    0.000    0.000    0.581    0.018 /Users/rpszonka/dev/openutm/openutm-airspace-models/src/cam_track_gen/bayesian_network.py:241(convert_sampled_data_to_track)
+       32    0.081    0.003    0.510    0.016 /Users/rpszonka/dev/openutm/openutm-airspace-models/src/cam_track_gen/dynamics.py:392(simulate_track)
+    80000    0.342    0.000    0.428    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/src/cam_track_gen/dynamics.py:179(integrate_single_time_step)
+       32    0.000    0.000    0.078    0.002 /Users/rpszonka/dev/openutm/openutm-airspace-models/src/cam_track_gen/bayesian_network.py:102(sample_transition_state_sequence)
+       32    0.036    0.001    0.077    0.002 /Users/rpszonka/dev/openutm/openutm-airspace-models/src/cam_track_gen/bayesian_network.py:124(_sample_dependent_variable_transitions)
+       32    0.034    0.001    0.067    0.002 /Users/rpszonka/dev/openutm/openutm-airspace-models/src/cam_track_gen/bayesian_network.py:325(_process_transition_data_with_resampling)
+    24192    0.037    0.000    0.037    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/src/cam_track_gen/utilities.py:69(sample_from_distribution)
+   157286    0.022    0.000    0.022    0.000 {built-in method builtins.min}
+   240000    0.019    0.000    0.019    0.000 {built-in method math.sin}
+     7968    0.007    0.000    0.019    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/_core/numeric.py:2524(array_equal)
+   240000    0.019    0.000    0.019    0.000 {built-in method math.cos}
+     8000    0.002    0.000    0.010    0.000 {method 'all' of 'numpy.ndarray' objects}
+     8000    0.001    0.000    0.008    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/_core/_methods.py:66(_all)
+     8512    0.008    0.000    0.008    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+    77254    0.007    0.000    0.007    0.000 {built-in method math.acos}
+    78756    0.006    0.000    0.006    0.000 {built-in method builtins.abs}
+    78660    0.006    0.000    0.006    0.000 {built-in method math.sqrt}
+       32    0.000    0.000    0.005    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/src/cam_track_gen/validation.py:35(validate_track)
+    18602    0.005    0.000    0.005    0.000 {method 'copy' of 'numpy.ndarray' objects}
+      851    0.001    0.000    0.004    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/lib/_arraysetops_impl.py:145(unique)
+       32    0.000    0.000    0.004    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/src/cam_track_gen/validation.py:72(_check_vertical_rate_constraint_violation)
+      851    0.001    0.000    0.003    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/lib/_arraysetops_impl.py:348(_unique1d)
+       32    0.002    0.000    0.003    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py:994(gradient)
+       32    0.001    0.000    0.003    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/src/cam_track_gen/bayesian_network.py:293(_convert_initial_conditions_to_continuous)
+        1    0.001    0.001    0.003    0.003 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/frame.py:698(__init__)
+       32    0.001    0.000    0.002    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/src/cam_track_gen/bayesian_network.py:75(sample_initial_state_conditions)
+    13793    0.002    0.000    0.002    0.000 {method 'append' of 'list' objects}
+      512    0.001    0.000    0.002    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:89(_wrapreduction_any_all)
+      353    0.002    0.000    0.002    0.000 {built-in method numpy.array}
+      320    0.000    0.000    0.001    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:2477(any)
+     4056    0.001    0.000    0.001    0.000 {method 'flatten' of 'numpy.ndarray' objects}
+    16072    0.001    0.000    0.001    0.000 {built-in method numpy.asarray}
+       32    0.001    0.000    0.001    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/src/cam_track_gen/validation.py:50(_check_altitude_constraint_violation)
+      224    0.001    0.000    0.001    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py:1391(diff)
+     8320    0.001    0.000    0.001    0.000 {method 'tolist' of 'numpy.ndarray' objects}
+     3077    0.001    0.000    0.001    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/src/cam_track_gen/utilities.py:122(convert_discrete_bin_to_continuous_value)
+        4    0.000    0.000    0.001    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/indexes/base.py:7659(ensure_index)
+       32    0.001    0.000    0.001    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/src/cam_track_gen/bayesian_network.py:416(_create_simulation_control_parameters)
+        1    0.000    0.000    0.001    0.001 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/indexes/base.py:475(__new__)
+       32    0.000    0.000    0.001    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py:5289(delete)
+    10022    0.001    0.000    0.001    0.000 {built-in method numpy.asanyarray}
+      851    0.001    0.000    0.001    0.000 {built-in method numpy._core._multiarray_umath._unique_hash}
+      192    0.000    0.000    0.001    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:2589(all)
+       32    0.000    0.000    0.001    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/src/cam_track_gen/bayesian_network.py:376(_create_initial_kinematic_state)
+     8819    0.001    0.000    0.001    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/_core/multiarray.py:391(where)
+     7968    0.001    0.000    0.001    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/_core/numeric.py:2505(_array_equal_dispatcher)
+        7    0.000    0.000    0.001    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/construction.py:517(sanitize_array)
+      851    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/ma/core.py:6879(is_masked)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/dtypes/cast.py:123(maybe_convert_platform)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/internals/construction.py:506(nested_data_to_arrays)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/internals/construction.py:96(arrays_to_mgr)
+      128    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/_core/numerictypes.py:475(issubdtype)
+       32    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/lib/_index_tricks_impl.py:32(ix_)
+       40    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/_core/numeric.py:324(full)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/internals/construction.py:793(to_arrays)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/internals/managers.py:2140(create_block_manager_from_column_arrays)
+       32    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/src/cam_track_gen/validation.py:61(_check_velocity_constraint_violation)
+      264    0.000    0.000    0.000    0.000 {built-in method builtins.isinstance}
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/internals/managers.py:2209(_form_blocks)
+       64    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/_core/numeric.py:171(ones)
+       32    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/lib/_shape_base_impl.py:628(column_stack)
+        2    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/dtypes/common.py:1341(is_ea_or_datetimelike_dtype)
+      851    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/ma/core.py:1411(getmask)
+2291/2283    0.000    0.000    0.000    0.000 {built-in method builtins.len}
+      851    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/lib/_arraysetops_impl.py:131(_unpack_tuple)
+      851    0.000    0.000    0.000    0.000 {method 'sort' of 'numpy.ndarray' objects}
+      256    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/_core/numerictypes.py:293(issubclass_)
+        3    0.000    0.000    0.000    0.000 <frozen abc>:117(__instancecheck__)
+        3    0.000    0.000    0.000    0.000 {built-in method _abc._abc_instancecheck}
+       64    0.000    0.000    0.000    0.000 {built-in method builtins.any}
+     51/2    0.000    0.000    0.000    0.000 <frozen abc>:121(__subclasscheck__)
+     51/2    0.000    0.000    0.000    0.000 {built-in method _abc._abc_subclasscheck}
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/indexes/base.py:650(_simple_new)
+       32    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/src/cam_track_gen/bayesian_network.py:222(_build_combined_parent_sizes)
+       32    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/src/cam_track_gen/dynamics.py:463(_convert_buffer_to_track_result)
+      883    0.000    0.000    0.000    0.000 {method 'wrap' of 'numpy._core._multiarray_umath._array_converter' objects}
+      106    0.000    0.000    0.000    0.000 {built-in method numpy.empty}
+      160    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/src/cam_track_gen/utilities.py:94(calculate_conditional_probability_table_index)
+      961    0.000    0.000    0.000    0.000 {built-in method builtins.getattr}
+      392    0.000    0.000    0.000    0.000 {built-in method builtins.issubclass}
+      192    0.000    0.000    0.000    0.000 {method 'astype' of 'numpy.ndarray' objects}
+      570    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/src/cam_track_gen/bayesian_network.py:312(<genexpr>)
+       32    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/src/cam_track_gen/dynamics.py:383(__init__)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/internals/construction.py:849(_list_to_arrays)
+       64    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:2018(nonzero)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/internals/construction.py:928(_finalize_columns_and_data)
+       32    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/src/cam_track_gen/dynamics.py:156(__init__)
+       96    0.000    0.000    0.000    0.000 {built-in method builtins.max}
+      512    0.000    0.000    0.000    0.000 {method 'items' of 'dict' objects}
+       32    0.000    0.000    0.000    0.000 {built-in method numpy.arange}
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/internals/construction.py:1006(convert_object_array)
+       32    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/lib/_shape_base_impl.py:624(_column_stack_dispatcher)
+      883    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/_core/multiarray.py:188(concatenate)
+        6    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/internals/construction.py:1028(convert)
+       64    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:51(_wrapfunc)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/internals/construction.py:596(_homogenize)
+      851    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/lib/_arraysetops_impl.py:139(_unique_dispatcher)
+       96    0.000    0.000    0.000    0.000 {built-in method numpy.zeros}
+       32    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/_core/shape_base.py:208(_arrays_for_stack_dispatcher)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/dtypes/inference.py:306(is_named_tuple)
+       32    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/src/cam_track_gen/dynamics.py:28(__init__)
+       64    0.000    0.000    0.000    0.000 {method 'reshape' of 'numpy.ndarray' objects}
+       32    0.000    0.000    0.000    0.000 /Users/rpszonka/.local/share/uv/python/cpython-3.12.10-macos-aarch64-none/lib/python3.12/enum.py:202(__get__)
+      256    0.000    0.000    0.000    0.000 {built-in method numpy.lib.array_utils.normalize_axis_index}
+       32    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/src/cam_track_gen/data_classes.py:42(maximum_magnitude_feet_per_second)
+      192    0.000    0.000    0.000    0.000 {method 'item' of 'numpy.ndarray' objects}
+      160    0.000    0.000    0.000    0.000 {method 'index' of 'list' objects}
+       35    0.000    0.000    0.000    0.000 {built-in method builtins.hasattr}
+      320    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:2472(_any_dispatcher)
+       96    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py:989(_gradient_dispatcher)
+       64    0.000    0.000    0.000    0.000 {method 'nonzero' of 'numpy.ndarray' objects}
+       32    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/src/cam_track_gen/constants.py:29(convert_feet_per_minute_to_feet_per_second)
+      224    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py:1387(_diff_dispatcher)
+       29    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/dtypes/generic.py:42(_instancecheck)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/_core/_asarray.py:26(require)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/tests/performance/profiler.py:92(stop)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/_config/config.py:145(_get_option)
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+      192    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:2584(_all_dispatcher)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/dtypes/cast.py:1166(maybe_infer_to_datetimelike)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/generic.py:281(__init__)
+       32    0.000    0.000    0.000    0.000 {built-in method math.asin}
+       32    0.000    0.000    0.000    0.000 {method 'as_arrays' of 'numpy._core._multiarray_umath._array_converter' objects}
+      104    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/_core/multiarray.py:1106(copyto)
+       32    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/src/cam_track_gen/bayesian_network.py:286(_get_variable_labels_for_model)
+       64    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/src/cam_track_gen/constants.py:24(convert_knots_to_feet_per_second)
+       29    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/dtypes/generic.py:37(_check)
+       32    0.000    0.000    0.000    0.000 <string>:2(__init__)
+       32    0.000    0.000    0.000    0.000 {built-in method math.atan}
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/dtypes/cast.py:1591(construct_1d_object_array_from_listlike)
+       64    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:3523(ndim)
+       32    0.000    0.000    0.000    0.000 /Users/rpszonka/.local/share/uv/python/cpython-3.12.10-macos-aarch64-none/lib/python3.12/enum.py:1291(value)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/_config/config.py:127(_get_single_key)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/indexes/api.py:386(default_index)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/dtypes/inference.py:404(is_dataclass)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/internals/managers.py:1801(_consolidate_inplace)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/internals/managers.py:2265(_stack_arrays)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/internals/blocks.py:2747(get_block_type)
+       64    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:3519(_ndim_dispatcher)
+        7    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/construction.py:693(_sanitize_ndim)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/internals/managers.py:1783(is_consolidated)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/internals/construction.py:532(treat_as_nested)
+        6    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/common.py:568(require_length_match)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/indexes/range.py:201(_simple_new)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/_config/config.py:676(_translate_key)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/_config/config.py:635(_get_root)
+        6    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/internals/managers.py:2196(_grouping_func)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/.local/share/uv/python/cpython-3.12.10-macos-aarch64-none/lib/python3.12/dataclasses.py:1301(is_dataclass)
+       64    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:2014(_nonzero_dispatcher)
+       32    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/src/cam_track_gen/constants.py:34(convert_degrees_to_radians)
+        7    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/construction.py:732(_sanitize_str_dtypes)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/flags.py:51(__init__)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/indexes/base.py:7754(maybe_extract_name)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/internals/construction.py:950(_validate_or_indexify_columns)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/indexes/base.py:610(_dtype_to_subclass)
+        7    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/construction.py:416(extract_array)
+       32    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/lib/_index_tricks_impl.py:28(_ix__dispatcher)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/internals/managers.py:1791(_consolidate_check)
+       44    0.000    0.000    0.000    0.000 <frozen _collections_abc>:435(__subclasshook__)
+       32    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py:5285(_delete_dispatcher)
+       32    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/numpy/_core/multiarray.py:115(empty_like)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/_config/config.py:649(_get_deprecated_option)
+        2    0.000    0.000    0.000    0.000 {built-in method __new__ of type object at 0x1054723f0}
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/construction.py:481(ensure_wrapped_if_datetimelike)
+        7    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/construction.py:755(_maybe_repeat)
+        2    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/indexes/base.py:832(_reset_identity)
+        6    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/dtypes/common.py:1272(is_1d_only_ea_dtype)
+        6    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/indexes/range.py:999(__len__)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/internals/construction.py:196(mgr_to_mgr)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/_config/__init__.py:34(using_copy_on_write)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/dtypes/inference.py:334(is_hashable)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/indexes/base.py:592(_ensure_array)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/_config/__init__.py:55(using_string_dtype)
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/_config/config.py:617(_select_options)
+        7    0.000    0.000    0.000    0.000 <frozen _collections_abc>:341(__subclasshook__)
+        1    0.000    0.000    0.000    0.000 {method 'split' of 'str' objects}
+        2    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/indexes/base.py:912(__len__)
+        9    0.000    0.000    0.000    0.000 /Users/rpszonka/.local/share/uv/python/cpython-3.12.10-macos-aarch64-none/lib/python3.12/typing.py:2187(cast)
+        1    0.000    0.000    0.000    0.000 {method 'upper' of 'str' objects}
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/construction.py:685(_sanitize_non_ordered)
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.hash}
+        1    0.000    0.000    0.000    0.000 /Users/rpszonka/dev/openutm/openutm-airspace-models/.venv/lib/python3.12/site-packages/pandas/core/internals/managers.py:932(__init__)
+
+

@@ -64,6 +64,14 @@ class BayesianNetworkStateSampler:
 
         self.dynamic_variable_indices = sorted(self.transition_topological_order[-3:])
 
+        # Cache parent masks and sizes for transition sampling (hot path optimization)
+        self._transition_parent_masks: dict[int, NDArray[np.floating[Any]]] = {}
+        self._transition_parent_indices: dict[int, list[int]] = {}
+        for var_idx in self.transition_topological_order[-3:]:
+            mask = model_data.transition_directed_acyclic_graph[:, var_idx]
+            self._transition_parent_masks[var_idx] = mask
+            self._transition_parent_indices[var_idx] = list(np.nonzero(mask)[0])
+
     def sample_initial_state_conditions(self) -> NDArray[np.int_]:
         """Sample initial conditions from the initial distribution network.
 
@@ -129,21 +137,31 @@ class BayesianNetworkStateSampler:
 
         all_transition_samples: list[list[float]] = []
 
-        for _ in range(sequence_length):
-            for variable_index in self.transition_topological_order[-3:]:
-                parent_indicator_mask = self.model_data.transition_directed_acyclic_graph[:, variable_index]
+        # Cache frequently accessed values
+        last_three_vars = self.transition_topological_order[-3:]
+        prob_tables = self.model_data.transition_probability_tables
+        sample_fn = self.sampler.sample_from_distribution
 
-                if np.any(parent_indicator_mask):
-                    conditional_index = calculate_conditional_probability_table_index(
-                        parent_sizes[parent_indicator_mask == 1].tolist(),
-                        evidence_state_array[parent_indicator_mask == 1].tolist(),
-                    )
+        for _ in range(sequence_length):
+            for variable_index in last_three_vars:
+                # Use cached parent indices instead of recomputing mask each time
+                parent_indices = self._transition_parent_indices[variable_index]
+
+                if parent_indices:
+                    # Optimized index calculation for small number of parents
+                    linear_index = 0
+                    cumulative_product = 1
+                    for pi in parent_indices:
+                        linear_index += cumulative_product * (evidence_state_array[pi] - 1)
+                        cumulative_product *= parent_sizes[pi]
+                    conditional_index = linear_index + 1
                 else:
                     conditional_index = 1
 
-                probability_table = self.model_data.transition_probability_tables[variable_index][0]
-                evidence_state_array[variable_index] = self.sampler.sample_from_distribution(probability_table[:, conditional_index - 1]) + 1
-                evidence_state_array[variable_index - 3] = evidence_state_array[variable_index]
+                probability_table = prob_tables[variable_index][0]
+                sampled_value = sample_fn(probability_table[:, conditional_index - 1]) + 1
+                evidence_state_array[variable_index] = sampled_value
+                evidence_state_array[variable_index - 3] = sampled_value
 
             all_transition_samples.append(evidence_state_array[-3:].copy().tolist())
             evidence_state_array[-3:] = 0
@@ -321,16 +339,28 @@ class SampledDataToTrackConverter:
         indices_to_remove: list[int] = []
         resample_probabilities = self.configuration.resample_probabilities
 
+        # Pre-generate random numbers for better performance
+        all_random = np.random.rand(len(resampled_data), len(resample_probabilities))
+
         for step_index in range(1, len(resampled_data)):
             current_state = resampled_data[step_index, 1:4]
-            state_has_changed = not np.array_equal(previous_state, current_state)
 
-            variables_to_resample = np.where(np.random.rand(*resample_probabilities.shape) < resample_probabilities)[0] + 1
+            # Check if state changed using pure Python (faster for small arrays)
+            state_has_changed = (
+                previous_state[0] != current_state[0]
+                or previous_state[1] != current_state[1]
+                or previous_state[2] != current_state[2]
+            )
 
-            if variables_to_resample.size > 0 or state_has_changed:
+            # Check which variables to resample using pre-generated random numbers
+            resample_mask = all_random[step_index] < resample_probabilities.flatten()
+            variables_to_resample = [i + 1 for i, m in enumerate(resample_mask) if m]
+
+            if variables_to_resample or state_has_changed:
                 if state_has_changed:
-                    changed_variable_indices = np.where(previous_state != current_state)[0] + 1
-                    variables_to_resample = np.unique(np.concatenate((variables_to_resample, changed_variable_indices)))
+                    # Find changed variables with pure Python
+                    changed_vars = [i + 1 for i in range(3) if previous_state[i] != current_state[i]]
+                    variables_to_resample = list(set(variables_to_resample + changed_vars))
 
                 previous_state = current_state.copy()
                 resampled_data[step_index, 1:4] = resampled_data[step_index - 1, 1:4].copy()

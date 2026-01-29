@@ -1,0 +1,30 @@
+{
+  "config": {
+    "model_filename": "Light_Aircraft_Below_10000_ft_Data.mat",
+    "number_of_tracks": 10,
+    "simulation_duration_seconds": 250,
+    "warmup_iterations": 1,
+    "benchmark_iterations": 5,
+    "use_reproducible_seed": true
+  },
+  "timestamp": "2026-01-29T02:33:28.617862",
+  "total_times_seconds": [
+    0.5086262933909893,
+    0.44207166507840157,
+    0.44606054201722145,
+    0.6680388748645782,
+    0.4448588751256466
+  ],
+  "tracks_generated": 50,
+  "tracks_per_second": 19.923047226288443,
+  "mean_time_seconds": 0.5019312500953674,
+  "std_time_seconds": 0.09695170000500299,
+  "min_time_seconds": 0.44207166507840157,
+  "max_time_seconds": 0.6680388748645782,
+  "median_time_seconds": 0.44606054201722145,
+  "metadata": {
+    "python_version": "3.12.10 (main, May 30 2025, 05:53:56) [Clang 20.1.4 ]",
+    "platform": "macOS-14.6-arm64-arm-64bit",
+    "label": ""
+  }
+}

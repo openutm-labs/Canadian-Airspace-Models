@@ -6,6 +6,7 @@ and configuration objects used throughout the package.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -115,15 +116,21 @@ class TrigonometricStateValues:
         bank_radians: float,
         heading_radians: float,
     ) -> TrigonometricStateValues:
-        """Create TrigonometricStateValues from Euler angles."""
+        """Create TrigonometricStateValues from Euler angles.
+
+        Uses math module for scalar trig operations (faster than numpy for scalars).
+        """
+        # math module is significantly faster than numpy for scalar operations
+        sin_pitch = math.sin(pitch_radians)
+        cos_pitch = math.cos(pitch_radians)
         return cls(
-            sine_pitch=float(np.sin(pitch_radians)),
-            cosine_pitch=float(np.cos(pitch_radians)),
-            tangent_pitch=float(np.tan(pitch_radians)),
-            sine_bank=float(np.sin(bank_radians)),
-            cosine_bank=float(np.cos(bank_radians)),
-            sine_heading=float(np.sin(heading_radians)),
-            cosine_heading=float(np.cos(heading_radians)),
+            sine_pitch=sin_pitch,
+            cosine_pitch=cos_pitch,
+            tangent_pitch=sin_pitch / cos_pitch if cos_pitch != 0 else math.tan(pitch_radians),
+            sine_bank=math.sin(bank_radians),
+            cosine_bank=math.cos(bank_radians),
+            sine_heading=math.sin(heading_radians),
+            cosine_heading=math.cos(heading_radians),
         )
 
 
