@@ -7,7 +7,9 @@ Bayesian network models trained on Canadian airspace data.
 # Core types and data classes
 from .constants import DEFAULT_OUTPUT_DIRECTORY
 from .data_classes import BayesianNetworkModelData
-from .types import TrackResultData
+
+# Export functionality
+from .exporters import CsvTrackResultExporter, MatlabTrackResultExporter
 
 # Main generator and session
 from .generator import (
@@ -18,15 +20,6 @@ from .generator import (
     load_bayesian_network_model_from_file,
 )
 
-# Export functionality
-from .exporters import CsvTrackResultExporter, MatlabTrackResultExporter
-
-# Visualization
-from .visualization import TrackVisualizationRenderer
-
-# Utilities
-from .utilities import generate_unique_filepath
-
 # Legacy API support
 from .legacy_api import (
     gen_track,
@@ -35,6 +28,13 @@ from .legacy_api import (
     save_as_matlab,
     save_to_csv,
 )
+from .types import TrackResultData
+
+# Utilities
+from .utilities import generate_unique_filepath
+
+# Visualization
+from .visualization import TrackVisualizationRenderer
 
 __all__ = [
     # Constants

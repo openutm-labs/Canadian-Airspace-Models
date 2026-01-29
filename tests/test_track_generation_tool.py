@@ -58,9 +58,9 @@ from cam_track_gen.track_generation_tool import (
     get_mat_files,
     get_unique_filename,
     load_bayesian_network_model_from_file,
+    saturate_value_within_limits,
     save_as_matlab,
     save_to_csv,
-    saturate_value_within_limits,
 )
 
 # =============================================================================
@@ -1235,6 +1235,7 @@ class TestLegacyApi:
 
         # Temporarily change to tmp_path to test output
         import os
+
         original_cwd = os.getcwd()
         try:
             os.chdir(tmp_path)
@@ -1258,6 +1259,7 @@ class TestLegacyApi:
             pytest.skip("Could not generate tracks")
 
         import os
+
         original_cwd = os.getcwd()
         try:
             os.chdir(tmp_path)
@@ -1600,6 +1602,7 @@ class TestTrackGenerationSessionAdditional:
 
         # Export to CSV
         import os
+
         original_cwd = os.getcwd()
         try:
             os.chdir(tmp_path)
@@ -1670,6 +1673,8 @@ class TestPerformanceLimitsCalculatorAdditional:
         assert config.performance_limits is not None
         assert config.performance_limits.velocity_limits.minimum_feet_per_second > 0
         assert config.performance_limits.velocity_limits.maximum_feet_per_second > 0
+
+
 # =============================================================================
 
 

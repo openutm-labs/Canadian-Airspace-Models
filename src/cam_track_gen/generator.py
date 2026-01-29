@@ -74,18 +74,14 @@ class AircraftTrackGenerator:
         cut_points_order = self._compute_cut_points_order(cut_points_labels)
 
         acceleration_label = (
-            CutPointLabels.ACCELERATION_LEGACY
-            if CutPointLabels.ACCELERATION_LEGACY in cut_points_labels
-            else CutPointLabels.ACCELERATION
+            CutPointLabels.ACCELERATION_LEGACY if CutPointLabels.ACCELERATION_LEGACY in cut_points_labels else CutPointLabels.ACCELERATION
         )
         acceleration_index = cut_points_labels.index(acceleration_label)
         turn_rate_index = cut_points_labels.index(CutPointLabels.TURN_RATE)
 
         discretization_boundaries = self.model_data.discretization_cut_points[cut_points_order, 1]
         limits_calculator = PerformanceLimitsCalculator(self.model_data)
-        altitude_boundary, performance_limits = limits_calculator.calculate_limits(
-            discretization_boundaries, is_rotorcraft=False
-        )
+        altitude_boundary, performance_limits = limits_calculator.calculate_limits(discretization_boundaries, is_rotorcraft=False)
 
         resample_probabilities = self.model_data.resample_rate_matrix[-3:, 0]
 
@@ -134,10 +130,7 @@ class AircraftTrackGenerator:
 
     def _compute_cut_points_order(self, cut_points_labels: list[str]) -> list[int]:
         """Compute the order of cut points based on labels."""
-        return [
-            int(np.nonzero(self.model_data.discretization_cut_points[:, 0] == label)[0][0])
-            for label in cut_points_labels
-        ]
+        return [int(np.nonzero(self.model_data.discretization_cut_points[:, 0] == label)[0][0]) for label in cut_points_labels]
 
     def generate_multiple_tracks(
         self,
@@ -173,15 +166,10 @@ class AircraftTrackGenerator:
             initial_conditions = self.sampler.sample_initial_state_conditions()
 
             # Sample transition sequence
-            transition_sequence = self.sampler.sample_transition_state_sequence(
-                initial_conditions, simulation_duration_seconds
-            )
+            transition_sequence = self.sampler.sample_transition_state_sequence(initial_conditions, simulation_duration_seconds)
 
             # Convert to dictionary format
-            initial_conditions_dict = {
-                label: int(initial_conditions[index])
-                for index, label in enumerate(self.model_data.variable_labels)
-            }
+            initial_conditions_dict = {label: int(initial_conditions[index]) for index, label in enumerate(self.model_data.variable_labels)}
 
             # Generate track
             track_result = self._data_converter.convert_sampled_data_to_track(
@@ -218,9 +206,7 @@ def get_available_model_files() -> list[str]:
         List of .mat filenames.
     """
     data_directory = resources.files(__package__) / "data"
-    return [
-        entry.name for entry in data_directory.iterdir() if entry.is_file() and entry.name.endswith(".mat")
-    ]
+    return [entry.name for entry in data_directory.iterdir() if entry.is_file() and entry.name.endswith(".mat")]
 
 
 def load_bayesian_network_model_from_file(
@@ -318,12 +304,10 @@ class TrackGenerationSession:
         Returns:
             List of generated track results.
         """
-        self.generated_tracks, self.initial_conditions, self.transition_data = (
-            self.generator.generate_multiple_tracks(
-                number_of_tracks,
-                simulation_duration_seconds,
-                use_reproducible_seed,
-            )
+        self.generated_tracks, self.initial_conditions, self.transition_data = self.generator.generate_multiple_tracks(
+            number_of_tracks,
+            simulation_duration_seconds,
+            use_reproducible_seed,
         )
         return self.generated_tracks
 

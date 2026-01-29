@@ -112,9 +112,7 @@ class AircraftDynamicsCalculator:
         if discriminant < 0:
             return self.maximum_bank_angle
 
-        cosine_bank_limit = (
-            (-safe_velocity * max_pitch_rate + np.sqrt(discriminant)) / (2 * self.gravity * trig_values.cosine_pitch)
-        )
+        cosine_bank_limit = (-safe_velocity * max_pitch_rate + np.sqrt(discriminant)) / (2 * self.gravity * trig_values.cosine_pitch)
 
         if abs(cosine_bank_limit) < 1:
             calculated_max_bank = float(np.arccos(cosine_bank_limit)) * 0.98
@@ -131,9 +129,7 @@ class AircraftDynamicsCalculator:
         yaw_rate: float,
     ) -> float:
         """Calculate commanded roll rate to achieve desired heading change."""
-        yaw_rate_without_roll_change = (
-            (pitch_rate * trig_values.sine_bank + yaw_rate * trig_values.cosine_bank) / trig_values.cosine_pitch
-        )
+        yaw_rate_without_roll_change = (pitch_rate * trig_values.sine_bank + yaw_rate * trig_values.cosine_bank) / trig_values.cosine_pitch
         yaw_rate_error = heading_change_command - yaw_rate_without_roll_change
         return 20.0 * yaw_rate_error
 
@@ -187,9 +183,7 @@ class AircraftDynamicsIntegrator:
             Updated aircraft state after integration.
         """
         # Saturate vertical rate command
-        saturated_vertical_rate = self.dynamics_calculator.calculate_saturated_vertical_rate_command(
-            vertical_rate_command
-        )
+        saturated_vertical_rate = self.dynamics_calculator.calculate_saturated_vertical_rate_command(vertical_rate_command)
 
         # Compute trigonometric values once
         trig_values = current_state.compute_trigonometric_values()
@@ -205,22 +199,16 @@ class AircraftDynamicsIntegrator:
         )
 
         # Calculate roll rate
-        roll_rate = self.dynamics_calculator.calculate_commanded_roll_rate(
-            trig_values, heading_change_command, pitch_rate, yaw_rate
-        )
+        roll_rate = self.dynamics_calculator.calculate_commanded_roll_rate(trig_values, heading_change_command, pitch_rate, yaw_rate)
 
         # Apply roll rate limits and bank angle constraints
         roll_rate = self._apply_roll_rate_constraints(current_state, roll_rate, maximum_bank)
 
         # Calculate body angular rates
-        bank_rate, pitch_rate_body, yaw_rate_body = self._calculate_body_frame_angular_rates(
-            trig_values, roll_rate, pitch_rate, yaw_rate
-        )
+        bank_rate, pitch_rate_body, yaw_rate_body = self._calculate_body_frame_angular_rates(trig_values, roll_rate, pitch_rate, yaw_rate)
 
         # Calculate position rates
-        north_rate, east_rate, vertical_rate = self.dynamics_calculator.calculate_position_rates(
-            current_state, trig_values
-        )
+        north_rate, east_rate, vertical_rate = self.dynamics_calculator.calculate_position_rates(current_state, trig_values)
 
         # Integrate state
         return self._integrate_state_variables(
@@ -242,9 +230,7 @@ class AircraftDynamicsIntegrator:
     ) -> float:
         """Apply roll rate limits and bank angle constraints."""
         # Limit maximum roll rate
-        constrained_roll_rate = saturate_value_within_limits(
-            roll_rate, -self.maximum_roll_rate, self.maximum_roll_rate
-        )
+        constrained_roll_rate = saturate_value_within_limits(roll_rate, -self.maximum_roll_rate, self.maximum_roll_rate)
 
         # Limit maximum bank angle
         projected_bank_angle = current_state.bank_angle_radians + constrained_roll_rate * self.time_step
@@ -270,10 +256,7 @@ class AircraftDynamicsIntegrator:
             + yaw_rate * trig_values.cosine_bank * trig_values.tangent_pitch
         )
         pitch_rate_body = pitch_rate * trig_values.cosine_bank - yaw_rate * trig_values.sine_bank
-        yaw_rate_body = (
-            pitch_rate * trig_values.sine_bank / trig_values.cosine_pitch
-            + yaw_rate * trig_values.cosine_bank / trig_values.cosine_pitch
-        )
+        yaw_rate_body = pitch_rate * trig_values.sine_bank / trig_values.cosine_pitch + yaw_rate * trig_values.cosine_bank / trig_values.cosine_pitch
 
         return bank_rate, pitch_rate_body, yaw_rate_body
 

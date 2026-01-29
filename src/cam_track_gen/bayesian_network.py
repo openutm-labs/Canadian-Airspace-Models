@@ -56,12 +56,8 @@ class BayesianNetworkStateSampler:
         self.model_data = model_data
         self.sampler = sampler or InverseTransformDistributionSampler()
 
-        self.initial_state_graph = nx.from_numpy_array(
-            model_data.initial_state_directed_acyclic_graph, create_using=nx.DiGraph
-        )
-        self.transition_graph = nx.from_numpy_array(
-            model_data.transition_directed_acyclic_graph, create_using=nx.DiGraph
-        )
+        self.initial_state_graph = nx.from_numpy_array(model_data.initial_state_directed_acyclic_graph, create_using=nx.DiGraph)
+        self.transition_graph = nx.from_numpy_array(model_data.transition_directed_acyclic_graph, create_using=nx.DiGraph)
 
         self.initial_topological_order = list(nx.topological_sort(self.initial_state_graph))
         self.transition_topological_order = list(nx.topological_sort(self.transition_graph))
@@ -77,9 +73,7 @@ class BayesianNetworkStateSampler:
         number_of_variables = len(self.initial_topological_order)
         sampled_variable_values = np.zeros(number_of_variables, dtype=int)
 
-        parent_sizes = np.array(
-            [array[0].shape[0] for array in self.model_data.initial_probability_tables]
-        )
+        parent_sizes = np.array([array[0].shape[0] for array in self.model_data.initial_probability_tables])
 
         for variable_index in self.initial_topological_order:
             parent_indicator_mask = self.model_data.initial_state_directed_acyclic_graph[:, variable_index]
@@ -93,9 +87,7 @@ class BayesianNetworkStateSampler:
                 conditional_index = 1
 
             probability_table = self.model_data.initial_probability_tables[variable_index][0]
-            sampled_variable_values[variable_index] = (
-                self.sampler.sample_from_distribution(probability_table[:, conditional_index - 1]) + 1
-            )
+            sampled_variable_values[variable_index] = self.sampler.sample_from_distribution(probability_table[:, conditional_index - 1]) + 1
 
         return sampled_variable_values
 
@@ -114,9 +106,7 @@ class BayesianNetworkStateSampler:
             List of transition values for each time step.
         """
         dynamic_variables_are_dependent = np.any(
-            self.model_data.transition_directed_acyclic_graph[
-                np.ix_(self.dynamic_variable_indices, self.dynamic_variable_indices)
-            ]
+            self.model_data.transition_directed_acyclic_graph[np.ix_(self.dynamic_variable_indices, self.dynamic_variable_indices)]
         )
 
         if dynamic_variables_are_dependent:
@@ -152,9 +142,7 @@ class BayesianNetworkStateSampler:
                     conditional_index = 1
 
                 probability_table = self.model_data.transition_probability_tables[variable_index][0]
-                evidence_state_array[variable_index] = (
-                    self.sampler.sample_from_distribution(probability_table[:, conditional_index - 1]) + 1
-                )
+                evidence_state_array[variable_index] = self.sampler.sample_from_distribution(probability_table[:, conditional_index - 1]) + 1
                 evidence_state_array[variable_index - 3] = evidence_state_array[variable_index]
 
             all_transition_samples.append(evidence_state_array[-3:].copy().tolist())
@@ -192,12 +180,8 @@ class BayesianNetworkStateSampler:
                 conditional_index = 1
 
             probability_table = self.model_data.transition_probability_tables[variable_index][0]
-            cumulative_probability_sums[variable_index] = np.cumsum(
-                probability_table[:, int(conditional_index) - 1]
-            )
-            random_threshold_values[:, variable_index] = (
-                cumulative_probability_sums[variable_index][-1] * np.random.rand(sequence_length)
-            )
+            cumulative_probability_sums[variable_index] = np.cumsum(probability_table[:, int(conditional_index) - 1])
+            random_threshold_values[:, variable_index] = cumulative_probability_sums[variable_index][-1] * np.random.rand(sequence_length)
 
         all_transition_samples: list[list[float]] = []
 
@@ -219,12 +203,8 @@ class BayesianNetworkStateSampler:
 
     def _build_combined_parent_sizes(self, number_of_initial_variables: int) -> NDArray[np.int_]:
         """Build combined parent sizes array from initial and transition probability tables."""
-        parent_sizes = np.array(
-            [array[0].shape[0] for array in self.model_data.transition_probability_tables]
-        )
-        parent_sizes[:number_of_initial_variables] = [
-            array[0].shape[0] for array in self.model_data.initial_probability_tables
-        ]
+        parent_sizes = np.array([array[0].shape[0] for array in self.model_data.transition_probability_tables])
+        parent_sizes[:number_of_initial_variables] = [array[0].shape[0] for array in self.model_data.initial_probability_tables]
         return parent_sizes
 
 
@@ -261,9 +241,7 @@ class SampledDataToTrackConverter:
         increment_offset = 2 if number_of_initial_variables == 6 else 3
 
         # Convert discretized initial conditions to continuous values
-        initial_continuous_values = self._convert_initial_conditions_to_continuous(
-            initial_state_conditions, variable_labels
-        )
+        initial_continuous_values = self._convert_initial_conditions_to_continuous(initial_state_conditions, variable_labels)
 
         # Process transition data with resampling
         control_command_sequence = self._process_transition_data_with_resampling(
@@ -274,9 +252,7 @@ class SampledDataToTrackConverter:
         )
 
         # Create initial aircraft state
-        initial_kinematic_state = self._create_initial_kinematic_state(
-            initial_continuous_values, variable_labels
-        )
+        initial_kinematic_state = self._create_initial_kinematic_state(initial_continuous_values, variable_labels)
 
         # Create simulation parameters
         simulation_parameters = self._create_simulation_control_parameters()
@@ -307,11 +283,7 @@ class SampledDataToTrackConverter:
 
         for index, label in enumerate(variable_labels):
             bin_edge_boundaries = (
-                self.model_data.discretization_cut_points[
-                    self.configuration.cut_points_variable_order[index], 1
-                ]
-                .flatten()
-                .astype(float)
+                self.model_data.discretization_cut_points[self.configuration.cut_points_variable_order[index], 1].flatten().astype(float)
             )
 
             # Handle legacy scaling for acceleration and turn rate
@@ -321,18 +293,14 @@ class SampledDataToTrackConverter:
             ):
                 if any(edge > 100 for edge in bin_edge_boundaries):
                     bin_edge_boundaries = bin_edge_boundaries / 100
-                    self.model_data.discretization_cut_points[
-                        self.configuration.cut_points_variable_order[index], 1
-                    ] = bin_edge_boundaries
+                    self.model_data.discretization_cut_points[self.configuration.cut_points_variable_order[index], 1] = bin_edge_boundaries
 
             discrete_bin_value = int(np.array(initial_state_conditions[label]).item())
 
             if np.all(np.diff(bin_edge_boundaries) == 1):
                 continuous_values[index] = discrete_bin_value
             else:
-                continuous_values[index] = convert_discrete_bin_to_continuous_value(
-                    bin_edge_boundaries, discrete_bin_value - 1
-                )
+                continuous_values[index] = convert_discrete_bin_to_continuous_value(bin_edge_boundaries, discrete_bin_value - 1)
 
         return continuous_values
 
@@ -394,15 +362,11 @@ class SampledDataToTrackConverter:
     ) -> AircraftKinematicState:
         """Create initial aircraft kinematic state from continuous values."""
         altitude_feet = continuous_values[variable_labels.index("Altitude")]
-        velocity_feet_per_second = UnitConversionConstants.convert_knots_to_feet_per_second(
-            continuous_values[variable_labels.index("Speed")]
-        )
+        velocity_feet_per_second = UnitConversionConstants.convert_knots_to_feet_per_second(continuous_values[variable_labels.index("Speed")])
         vertical_rate_feet_per_second = UnitConversionConstants.convert_feet_per_minute_to_feet_per_second(
             continuous_values[variable_labels.index("VRate")]
         )
-        heading_change_radians_per_second = UnitConversionConstants.convert_degrees_to_radians(
-            continuous_values[variable_labels.index("TRate")]
-        )
+        heading_change_radians_per_second = UnitConversionConstants.convert_degrees_to_radians(continuous_values[variable_labels.index("TRate")])
 
         # Calculate initial attitude angles
         initial_heading_radians = 0.0
@@ -413,9 +377,7 @@ class SampledDataToTrackConverter:
             initial_pitch_radians = math.asin(vertical_rate_feet_per_second / velocity_feet_per_second)
 
         initial_bank_radians = math.atan(
-            velocity_feet_per_second
-            * heading_change_radians_per_second
-            / PhysicsConstants.GRAVITATIONAL_ACCELERATION_FEET_PER_SECOND_SQUARED
+            velocity_feet_per_second * heading_change_radians_per_second / PhysicsConstants.GRAVITATIONAL_ACCELERATION_FEET_PER_SECOND_SQUARED
         )
 
         from cam_track_gen.types import VariableLabel
@@ -438,21 +400,14 @@ class SampledDataToTrackConverter:
         cut_points = self.model_data.discretization_cut_points
 
         speed_cut_point_index = int(np.nonzero(cut_points[:, 0] == CutPointLabels.SPEED)[0][0])
-        vertical_rate_cut_point_index = int(
-            np.nonzero(cut_points[:, 0] == CutPointLabels.VERTICAL_RATE)[0][0]
-        )
+        vertical_rate_cut_point_index = int(np.nonzero(cut_points[:, 0] == CutPointLabels.VERTICAL_RATE)[0][0])
 
-        maximum_velocity = (
-            max(cut_points[speed_cut_point_index, 1].flatten())
-            * UnitConversionConstants.KNOTS_TO_FEET_PER_SECOND
-        )
+        maximum_velocity = max(cut_points[speed_cut_point_index, 1].flatten()) * UnitConversionConstants.KNOTS_TO_FEET_PER_SECOND
         minimum_vertical_rate = (
-            min(cut_points[vertical_rate_cut_point_index, 1].flatten())
-            * UnitConversionConstants.FEET_PER_MINUTE_TO_FEET_PER_SECOND
+            min(cut_points[vertical_rate_cut_point_index, 1].flatten()) * UnitConversionConstants.FEET_PER_MINUTE_TO_FEET_PER_SECOND
         )
         maximum_vertical_rate = (
-            max(cut_points[vertical_rate_cut_point_index, 1].flatten())
-            * UnitConversionConstants.FEET_PER_MINUTE_TO_FEET_PER_SECOND
+            max(cut_points[vertical_rate_cut_point_index, 1].flatten()) * UnitConversionConstants.FEET_PER_MINUTE_TO_FEET_PER_SECOND
         )
 
         return SimulationControlParameters(
@@ -556,16 +511,10 @@ class PerformanceLimitsCalculator:
         normalized_probabilities = 100 * (probability_distribution / np.sum(probability_distribution))
         cumulative_probability = np.cumsum(normalized_probabilities)
 
-        low_percentile_index = int(
-            np.argmax(cumulative_probability >= StatisticalThresholds.LOW_PERCENTILE)
-        )
-        high_percentile_index = int(
-            np.argmax(cumulative_probability >= StatisticalThresholds.HIGH_PERCENTILE)
-        )
+        low_percentile_index = int(np.argmax(cumulative_probability >= StatisticalThresholds.LOW_PERCENTILE))
+        high_percentile_index = int(np.argmax(cumulative_probability >= StatisticalThresholds.HIGH_PERCENTILE))
 
-        flat_boundaries = (
-            bin_edge_boundaries.flatten() if bin_edge_boundaries.ndim > 1 else bin_edge_boundaries
-        )
+        flat_boundaries = bin_edge_boundaries.flatten() if bin_edge_boundaries.ndim > 1 else bin_edge_boundaries
 
         return (
             float(flat_boundaries[low_percentile_index + 1]),

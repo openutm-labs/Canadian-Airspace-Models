@@ -54,10 +54,7 @@ class ConstraintBasedTrackValidator(TrackValidatorInterface):
         return bool(
             np.any(
                 (altitudes < self.altitude_boundary.minimum_altitude_feet)
-                | (
-                    altitudes
-                    > self.altitude_boundary.maximum_altitude_feet + self.altitude_boundary.validation_margin_feet
-                )
+                | (altitudes > self.altitude_boundary.maximum_altitude_feet + self.altitude_boundary.validation_margin_feet)
             )
         )
 
@@ -80,9 +77,4 @@ class ConstraintBasedTrackValidator(TrackValidatorInterface):
 
         vertical_rate_gradient = np.gradient(altitudes, times)
         vertical_rate_magnitude = np.abs(vertical_rate_gradient)
-        return bool(
-            np.any(
-                vertical_rate_magnitude
-                > self.performance_limits.vertical_rate_limits.maximum_magnitude_feet_per_second
-            )
-        )
+        return bool(np.any(vertical_rate_magnitude > self.performance_limits.vertical_rate_limits.maximum_magnitude_feet_per_second))

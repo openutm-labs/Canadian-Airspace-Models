@@ -10,6 +10,13 @@ This file maintains backward compatibility for existing imports from
 
 from __future__ import annotations
 
+# Re-export Bayesian network
+from cam_track_gen.bayesian_network import (
+    BayesianNetworkStateSampler,
+    PerformanceLimitsCalculator,
+    SampledDataToTrackConverter,
+)
+
 # Re-export constants
 from cam_track_gen.constants import (
     DEFAULT_OUTPUT_DIRECTORY,
@@ -19,16 +26,6 @@ from cam_track_gen.constants import (
     PhysicsConstants,
     StatisticalThresholds,
     UnitConversionConstants,
-)
-
-# Re-export types
-from cam_track_gen.types import (
-    AircraftCategory,
-    ProbabilityDistributionSampler,
-    TrackResultData,
-    TrackResultExporterInterface,
-    TrackValidatorInterface,
-    VariableLabel,
 )
 
 # Re-export data classes
@@ -45,16 +42,6 @@ from cam_track_gen.data_classes import (
     VerticalRateLimits,
 )
 
-# Re-export utilities
-from cam_track_gen.utilities import (
-    InverseTransformDistributionSampler,
-    calculate_conditional_probability_table_index,
-    convert_discrete_bin_to_continuous_value,
-    generate_unique_filepath,
-    get_unique_filename,
-    saturate_value_within_limits,
-)
-
 # Re-export dynamics
 from cam_track_gen.dynamics import (
     AircraftDynamicsCalculator,
@@ -62,27 +49,10 @@ from cam_track_gen.dynamics import (
     AircraftTrackSimulator,
 )
 
-# Re-export Bayesian network
-from cam_track_gen.bayesian_network import (
-    BayesianNetworkStateSampler,
-    PerformanceLimitsCalculator,
-    SampledDataToTrackConverter,
-)
-
-# Re-export validation
-from cam_track_gen.validation import (
-    ConstraintBasedTrackValidator,
-)
-
 # Re-export exporters
 from cam_track_gen.exporters import (
     CsvTrackResultExporter,
     MatlabTrackResultExporter,
-)
-
-# Re-export visualization
-from cam_track_gen.visualization import (
-    TrackVisualizationRenderer,
 )
 
 # Re-export generator
@@ -101,6 +71,36 @@ from cam_track_gen.legacy_api import (
     get_mat_files,
     save_as_matlab,
     save_to_csv,
+)
+
+# Re-export types
+from cam_track_gen.types import (
+    AircraftCategory,
+    ProbabilityDistributionSampler,
+    TrackResultData,
+    TrackResultExporterInterface,
+    TrackValidatorInterface,
+    VariableLabel,
+)
+
+# Re-export utilities
+from cam_track_gen.utilities import (
+    InverseTransformDistributionSampler,
+    calculate_conditional_probability_table_index,
+    convert_discrete_bin_to_continuous_value,
+    generate_unique_filepath,
+    get_unique_filename,
+    saturate_value_within_limits,
+)
+
+# Re-export validation
+from cam_track_gen.validation import (
+    ConstraintBasedTrackValidator,
+)
+
+# Re-export visualization
+from cam_track_gen.visualization import (
+    TrackVisualizationRenderer,
 )
 
 __all__ = [

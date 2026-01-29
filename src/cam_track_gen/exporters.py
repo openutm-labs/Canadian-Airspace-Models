@@ -72,9 +72,7 @@ class CsvTrackResultExporter(TrackResultExporterInterface):
                 for row_index in range(track_length):
                     if current_row_count >= self.maximum_rows_per_file:
                         current_file.close()
-                        output_filepath = generate_unique_filepath(
-                            target_directory, f"{output_filename_base}_Result", ".csv"
-                        )
+                        output_filepath = generate_unique_filepath(target_directory, f"{output_filename_base}_Result", ".csv")
                         current_file = open(output_filepath, mode="w", newline="", encoding="utf-8")  # noqa: SIM115
                         csv_writer = csv.writer(current_file)
                         csv_writer.writerow(fieldnames)

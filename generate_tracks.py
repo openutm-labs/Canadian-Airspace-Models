@@ -122,9 +122,7 @@ def main_alternative() -> None:
 
     # Save visualization to file (auto-saves to output/ with unique filename)
     plot_title = output_base_name.replace("_", " ")
-    saved_path = TrackVisualizationRenderer.render_three_dimensional_tracks(
-        track_results, plot_title, output_filename_base=output_base_name
-    )
+    saved_path = TrackVisualizationRenderer.render_three_dimensional_tracks(track_results, plot_title, output_filename_base=output_base_name)
     if saved_path:
         print(f"Saved plot image: {saved_path}")
 
