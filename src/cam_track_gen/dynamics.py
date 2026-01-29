@@ -6,6 +6,7 @@ aircraft dynamics using physics-based equations.
 
 from __future__ import annotations
 
+import math
 from typing import Any
 
 import numpy as np
@@ -164,6 +165,17 @@ class AircraftDynamicsIntegrator:
         self.integration_gain = PhysicsConstants.INTEGRATION_GAIN_FACTOR
         self.maximum_roll_rate = AircraftPerformanceLimits.MAXIMUM_ROLL_RATE_RADIANS_PER_SECOND
 
+        # Cache frequently used values to avoid attribute lookups
+        self._gravity = PhysicsConstants.GRAVITATIONAL_ACCELERATION_FEET_PER_SECOND_SQUARED
+        self._max_bank = AircraftPerformanceLimits.MAXIMUM_BANK_ANGLE_RADIANS
+        self._max_pitch_rate = control_parameters.maximum_pitch_rate_radians_per_second
+        self._max_yaw_rate = control_parameters.maximum_yaw_rate_radians_per_second
+        self._vr_min = control_parameters.vertical_rate_limits.minimum_feet_per_second
+        self._vr_max = control_parameters.vertical_rate_limits.maximum_feet_per_second
+        self._vel_min = control_parameters.velocity_limits.minimum_feet_per_second
+        self._vel_max = control_parameters.velocity_limits.maximum_feet_per_second
+        self._delta_time = self.time_step * self.integration_gain
+
     def integrate_single_time_step(
         self,
         current_state: AircraftKinematicState,
@@ -173,53 +185,129 @@ class AircraftDynamicsIntegrator:
     ) -> AircraftKinematicState:
         """Perform one time step of aircraft dynamics integration.
 
-        Args:
-            current_state: Current aircraft kinematic state.
-            acceleration_command: Commanded acceleration [ft/s²].
-            vertical_rate_command: Commanded vertical rate [ft/s].
-            heading_change_command: Commanded change in heading rate [rad/s].
-
-        Returns:
-            Updated aircraft state after integration.
+        Optimized version with inlined calculations to reduce method call overhead.
         """
-        # Saturate vertical rate command
-        saturated_vertical_rate = self.dynamics_calculator.calculate_saturated_vertical_rate_command(vertical_rate_command)
+        # Cache local references for speed
+        gravity = self._gravity
+        time_step = self.time_step
+        max_pitch_rate = self._max_pitch_rate
+        max_yaw_rate = self._max_yaw_rate
+        max_roll_rate = self.maximum_roll_rate
+        max_bank = self._max_bank
 
-        # Compute trigonometric values once
-        trig_values = current_state.compute_trigonometric_values()
+        # Saturate vertical rate command (inlined)
+        if vertical_rate_command < self._vr_min:
+            saturated_vr = self._vr_min
+        elif vertical_rate_command > self._vr_max:
+            saturated_vr = self._vr_max
+        else:
+            saturated_vr = vertical_rate_command
 
-        # Calculate angular rates
-        pitch_rate, yaw_rate = self.dynamics_calculator.calculate_pitch_and_yaw_rates(
-            current_state, trig_values, acceleration_command, saturated_vertical_rate
+        # Compute trigonometric values (using math module - faster for scalars)
+        pitch = current_state.pitch_angle_radians
+        bank = current_state.bank_angle_radians
+        heading = current_state.heading_angle_radians
+        velocity = current_state.velocity_feet_per_second
+
+        sin_pitch = math.sin(pitch)
+        cos_pitch = math.cos(pitch)
+        tan_pitch = sin_pitch / cos_pitch if cos_pitch != 0 else math.tan(pitch)
+        sin_bank = math.sin(bank)
+        cos_bank = math.cos(bank)
+        sin_heading = math.sin(heading)
+        cos_heading = math.cos(heading)
+
+        safe_velocity = velocity if velocity > 1.0 else 1.0
+
+        # Calculate pitch and yaw rates (inlined)
+        current_vertical_speed = velocity * sin_pitch
+        desired_vertical_accel = (saturated_vr - current_vertical_speed) / time_step
+
+        pitch_rate_num = (
+            desired_vertical_accel / cos_pitch
+            + gravity * cos_pitch * sin_bank * sin_bank
+            - acceleration_command * tan_pitch
+        )
+        pitch_rate = pitch_rate_num / (safe_velocity * cos_bank)
+
+        # Saturate pitch rate
+        if pitch_rate < -max_pitch_rate:
+            pitch_rate = -max_pitch_rate
+        elif pitch_rate > max_pitch_rate:
+            pitch_rate = max_pitch_rate
+
+        # Yaw rate from coordinated turn
+        yaw_rate = gravity * sin_bank * cos_pitch / safe_velocity
+        if yaw_rate < -max_yaw_rate:
+            yaw_rate = -max_yaw_rate
+        elif yaw_rate > max_yaw_rate:
+            yaw_rate = max_yaw_rate
+
+        # Calculate maximum allowable bank angle (inlined)
+        vert_accel_for_bank = min(desired_vertical_accel, safe_velocity * max_pitch_rate * cos_bank)
+
+        discriminant = (
+            safe_velocity * safe_velocity * max_pitch_rate * max_pitch_rate
+            - 4 * gravity * acceleration_command * sin_pitch
+            + 4 * gravity * vert_accel_for_bank
+            + 4 * gravity * gravity * cos_pitch * cos_pitch
         )
 
-        # Calculate maximum allowable bank angle
-        maximum_bank = self.dynamics_calculator.calculate_maximum_allowable_bank_angle(
-            current_state, trig_values, acceleration_command, saturated_vertical_rate
-        )
+        if discriminant < 0:
+            maximum_bank = max_bank
+        else:
+            cos_bank_limit = (-safe_velocity * max_pitch_rate + math.sqrt(discriminant)) / (2 * gravity * cos_pitch)
+            if abs(cos_bank_limit) < 1:
+                calculated_max_bank = math.acos(cos_bank_limit) * 0.98
+                maximum_bank = min(max_bank, calculated_max_bank)
+            else:
+                maximum_bank = 0.0
 
-        # Calculate roll rate
-        roll_rate = self.dynamics_calculator.calculate_commanded_roll_rate(trig_values, heading_change_command, pitch_rate, yaw_rate)
+        # Calculate roll rate (inlined)
+        yaw_rate_no_roll = (pitch_rate * sin_bank + yaw_rate * cos_bank) / cos_pitch
+        roll_rate = 20.0 * (heading_change_command - yaw_rate_no_roll)
 
-        # Apply roll rate limits and bank angle constraints
-        roll_rate = self._apply_roll_rate_constraints(current_state, roll_rate, maximum_bank)
+        # Apply roll rate constraints (inlined)
+        if roll_rate < -max_roll_rate:
+            roll_rate = -max_roll_rate
+        elif roll_rate > max_roll_rate:
+            roll_rate = max_roll_rate
 
-        # Calculate body angular rates
-        bank_rate, pitch_rate_body, yaw_rate_body = self._calculate_body_frame_angular_rates(trig_values, roll_rate, pitch_rate, yaw_rate)
+        projected_bank = bank + roll_rate * time_step
+        if projected_bank > maximum_bank:
+            roll_rate = (maximum_bank - bank) / time_step
+        elif projected_bank < -maximum_bank:
+            roll_rate = (-maximum_bank - bank) / time_step
 
-        # Calculate position rates
-        north_rate, east_rate, vertical_rate = self.dynamics_calculator.calculate_position_rates(current_state, trig_values)
+        # Calculate body frame angular rates (inlined)
+        bank_rate = roll_rate + pitch_rate * sin_bank * tan_pitch + yaw_rate * cos_bank * tan_pitch
+        pitch_rate_body = pitch_rate * cos_bank - yaw_rate * sin_bank
+        yaw_rate_body = pitch_rate * sin_bank / cos_pitch + yaw_rate * cos_bank / cos_pitch
 
-        # Integrate state
-        return self._integrate_state_variables(
-            current_state,
-            acceleration_command,
-            bank_rate,
-            pitch_rate_body,
-            yaw_rate_body,
-            north_rate,
-            east_rate,
-            vertical_rate,
+        # Calculate position rates (inlined)
+        north_rate = velocity * cos_pitch * cos_heading
+        east_rate = velocity * cos_pitch * sin_heading
+        vertical_rate_actual = velocity * sin_pitch
+
+        # Integrate state (inlined)
+        delta_t = self._delta_time
+        new_velocity = velocity + acceleration_command * delta_t
+
+        # Clamp velocity
+        if new_velocity < self._vel_min:
+            new_velocity = self._vel_min
+        elif new_velocity >= self._vel_max:
+            new_velocity = self._vel_max - 1e-6
+
+        return AircraftKinematicState(
+            velocity_feet_per_second=new_velocity,
+            north_position_feet=current_state.north_position_feet + north_rate * delta_t,
+            east_position_feet=current_state.east_position_feet + east_rate * delta_t,
+            altitude_feet=current_state.altitude_feet + vertical_rate_actual * delta_t,
+            heading_angle_radians=heading + yaw_rate_body * delta_t,
+            pitch_angle_radians=pitch + pitch_rate_body * delta_t,
+            bank_angle_radians=bank + bank_rate * delta_t,
+            acceleration_feet_per_second_squared=acceleration_command,
         )
 
     def _apply_roll_rate_constraints(
@@ -321,17 +409,31 @@ class AircraftTrackSimulator:
         state_history_buffer = np.full((number_of_time_steps, 8), np.nan)
 
         current_state = initial_state
-        state_history_buffer[0, :] = current_state.to_output_array(0.0)
+        # Write initial state directly to buffer instead of using to_output_array
+        state_history_buffer[0, 0] = 0.0
+        state_history_buffer[0, 1] = current_state.north_position_feet
+        state_history_buffer[0, 2] = current_state.east_position_feet
+        state_history_buffer[0, 3] = current_state.altitude_feet
+        state_history_buffer[0, 4] = current_state.velocity_feet_per_second
+        state_history_buffer[0, 5] = current_state.bank_angle_radians
+        state_history_buffer[0, 6] = current_state.pitch_angle_radians
+        state_history_buffer[0, 7] = current_state.heading_angle_radians
+
+        # Pre-build time to command index mapping (avoids np.where in hot loop)
+        command_times = control_command_sequence[:, 0]
+        time_to_command_index: dict[float, int] = {}
+        for i, t in enumerate(command_times):
+            time_to_command_index[float(t)] = i
 
         current_command_index = 1
+        time_step = self.time_step_seconds
 
         for step_index in range(1, number_of_time_steps):
-            current_time = step_index * self.time_step_seconds
+            current_time = step_index * time_step
 
-            # Find current command index
-            matching_time_indices = np.where(control_command_sequence[:, 0] == current_time)[0]
-            if matching_time_indices.size > 0:
-                current_command_index = matching_time_indices[0]
+            # Fast dict lookup instead of np.where
+            if current_time in time_to_command_index:
+                current_command_index = time_to_command_index[current_time]
 
             # Extract control commands
             acceleration_command = control_command_sequence[current_command_index, 1]
@@ -346,7 +448,15 @@ class AircraftTrackSimulator:
                 heading_change_command,
             )
 
-            state_history_buffer[step_index, :] = current_state.to_output_array(current_time)
+            # Write state directly to buffer (avoids numpy array creation)
+            state_history_buffer[step_index, 0] = current_time
+            state_history_buffer[step_index, 1] = current_state.north_position_feet
+            state_history_buffer[step_index, 2] = current_state.east_position_feet
+            state_history_buffer[step_index, 3] = current_state.altitude_feet
+            state_history_buffer[step_index, 4] = current_state.velocity_feet_per_second
+            state_history_buffer[step_index, 5] = current_state.bank_angle_radians
+            state_history_buffer[step_index, 6] = current_state.pitch_angle_radians
+            state_history_buffer[step_index, 7] = current_state.heading_angle_radians
 
         return self._convert_buffer_to_track_result(state_history_buffer)
 

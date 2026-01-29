@@ -55,7 +55,12 @@ def saturate_value_within_limits(
     Returns:
         Value clamped to [minimum_limit, maximum_limit].
     """
-    return max(minimum_limit, min(maximum_limit, value))
+    # Python builtins are faster for scalar values than np.clip
+    if value < minimum_limit:
+        return minimum_limit
+    if value > maximum_limit:
+        return maximum_limit
+    return value
 
 
 class InverseTransformDistributionSampler:
@@ -71,11 +76,19 @@ class InverseTransformDistributionSampler:
         Returns:
             Index of selected outcome (0-based).
         """
-        random_uniform_value = np.random.rand()
-        cumulative_probability_sum = np.cumsum(probability_weights)
-        scaled_threshold = cumulative_probability_sum[-1] * random_uniform_value
-        exceeds_threshold_mask = cumulative_probability_sum >= scaled_threshold
-        return int(np.argmax(exceeds_threshold_mask))
+        # Pure Python linear scan is faster than numpy cumsum + searchsorted for small arrays
+        # Typical probability tables have 2-10 bins
+        total = 0.0
+        for w in probability_weights:
+            total += w
+        threshold = total * np.random.rand()  # noqa: NPY002
+
+        cumulative = 0.0
+        for i, w in enumerate(probability_weights):
+            cumulative += w
+            if cumulative > threshold:
+                return i
+        return len(probability_weights) - 1
 
 
 def calculate_conditional_probability_table_index(
@@ -94,10 +107,16 @@ def calculate_conditional_probability_table_index(
     Returns:
         Linear index for probability table lookup (1-based).
     """
-    cumulative_size_product = np.cumprod([1] + list(parent_variable_sizes[:-1]))
-    adjusted_parent_values = np.array(parent_variable_values) - 1
-    linear_index = int(np.dot(cumulative_size_product, adjusted_parent_values)) + 1
-    return linear_index
+    # Optimized version avoiding numpy overhead for small arrays
+    # Most calls have 1-4 parents, so pure Python is faster
+    linear_index = 0
+    cumulative_product = 1
+
+    for size, value in zip(parent_variable_sizes, parent_variable_values):
+        linear_index += cumulative_product * (value - 1)
+        cumulative_product *= size
+
+    return linear_index + 1
 
 
 def convert_discrete_bin_to_continuous_value(
