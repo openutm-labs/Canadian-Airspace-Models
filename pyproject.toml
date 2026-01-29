@@ -1,0 +1,96 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cam-track-gen"
+version = "0.1.0"
+description = "Track generation tools for Canadian Airspace Models"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "matplotlib",
+    "networkx",
+    "numpy",
+    "pandas",
+    "scipy",
+]
+license = { file = "LICENSE" }
+
+[project.optional-dependencies]
+test = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["cam_track_gen"]
+
+[tool.setuptools.package-data]
+cam_track_gen = ["data/*.mat"]
+
+pythonpath = ["src", "."]
+
+
+[tool.ruff]
+line-length = 150
+indent-width = 4
+target-version = "py312"
+
+[tool.ruff.lint]
+# select = ["E", "F", "W", "I", "N", "D", "B", "A", "C4", "S", "Q"]
+# ignore = ["D100", "D101", "D102", "D103", "D104", "D105", "D106", "D107", "S101"]
+select = [
+    "E",
+    "F",
+    "W",
+    "I",
+    # "UP",
+]
+ignore = [
+    "F401",
+]
+fixable = [
+    "I",
+]
+unfixable = [
+]
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = true
+docstring-code-line-length = "dynamic"
+
+[tool.codespell]
+ignore-words = ".codespellignore"
+quiet-level = 2
+skip = "uv.lock"
+
+[tool.pylint]
+load-plugins = "pylint_pytest"
+
+[tool.pylint.format]
+max-line-length = 150
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "integration: marks tests as integration tests (may require external resources)",
+]
+addopts = "-v --tb=short"
+
+[tool.mypy]
+python_version = "3.12"
+# warn_return_any = true
+# warn_unused_configs = true
+ignore_missing_imports = true
+# disallow_untyped_defs = true
+# check_untyped_defs = true
