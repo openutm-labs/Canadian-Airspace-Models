@@ -19,15 +19,6 @@ from .generator import (
     get_available_model_files,
     load_bayesian_network_model_from_file,
 )
-
-# Legacy API support
-from .legacy_api import (
-    gen_track,
-    generate_plot,
-    get_mat_files,
-    save_as_matlab,
-    save_to_csv,
-)
 from .types import TrackResultData
 
 # Utilities
@@ -55,10 +46,4 @@ __all__ = [
     "TrackVisualizationRenderer",
     # Utilities
     "generate_unique_filepath",
-    # Legacy API
-    "gen_track",
-    "generate_plot",
-    "get_mat_files",
-    "save_as_matlab",
-    "save_to_csv",
 ]

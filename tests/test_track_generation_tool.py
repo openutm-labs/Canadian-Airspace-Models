@@ -17,51 +17,58 @@ import pytest
 from numpy.testing import assert_array_almost_equal, assert_array_equal
 from numpy.typing import NDArray
 
-# Import the refactored module
-from cam_track_gen.track_generation_tool import (
-    AircraftDynamicsCalculator,
-    AircraftDynamicsIntegrator,
-    AircraftKinematicState,
+# Import from refactored modules
+from cam_track_gen.bayesian_network import (
+    BayesianNetworkStateSampler,
+    PerformanceLimitsCalculator,
+    SampledDataToTrackConverter,
+)
+from cam_track_gen.constants import (
     AircraftPerformanceLimits,
-    AircraftTrackGenerator,
-    AircraftTrackSimulator,
+    FileExportLimits,
+    PhysicsConstants,
+    StatisticalThresholds,
+    UnitConversionConstants,
+)
+from cam_track_gen.data_classes import (
+    AircraftKinematicState,
     AltitudeBoundary,
     AngularRateLimits,
     BayesianNetworkModelData,
-    BayesianNetworkStateSampler,
-    ConstraintBasedTrackValidator,
-    CsvTrackResultExporter,
     DynamicPerformanceLimits,
-    FileExportLimits,
-    InverseTransformDistributionSampler,
-    MatlabTrackResultExporter,
-    PerformanceLimitsCalculator,
-    PhysicsConstants,
-    SampledDataToTrackConverter,
     SimulationControlParameters,
-    StatisticalThresholds,
     TrackGenerationConfiguration,
-    TrackGenerationSession,
-    TrackResultData,
-    TrackVisualizationRenderer,
     TrigonometricStateValues,
-    UnitConversionConstants,
     VelocityLimits,
     VerticalRateLimits,
+)
+from cam_track_gen.dynamics import (
+    AircraftDynamicsCalculator,
+    AircraftDynamicsIntegrator,
+    AircraftTrackSimulator,
+)
+from cam_track_gen.exporters import (
+    CsvTrackResultExporter,
+    MatlabTrackResultExporter,
+)
+from cam_track_gen.generator import (
+    AircraftTrackGenerator,
+    TrackGenerationSession,
+    generate_aircraft_tracks,
+    get_available_model_files,
+    load_bayesian_network_model_from_file,
+)
+from cam_track_gen.types import TrackResultData
+from cam_track_gen.utilities import (
+    InverseTransformDistributionSampler,
     calculate_conditional_probability_table_index,
     convert_discrete_bin_to_continuous_value,
-    gen_track,
-    generate_aircraft_tracks,
-    generate_plot,
     generate_unique_filepath,
-    get_available_model_files,
-    get_mat_files,
     get_unique_filename,
-    load_bayesian_network_model_from_file,
     saturate_value_within_limits,
-    save_as_matlab,
-    save_to_csv,
 )
+from cam_track_gen.validation import ConstraintBasedTrackValidator
+from cam_track_gen.visualization import TrackVisualizationRenderer
 
 # =============================================================================
 # Fixtures
@@ -1157,118 +1164,6 @@ class TestEdgeCases:
 
         # Bank angle should be limited
         assert abs(new_state.bank_angle_radians) <= AircraftPerformanceLimits.MAXIMUM_BANK_ANGLE_RADIANS
-
-
-# =============================================================================
-# Legacy API Tests
-# =============================================================================
-
-
-class TestLegacyApi:
-    """Tests for legacy API functions."""
-
-    def test_get_mat_files(self) -> None:
-        """Test get_mat_files returns available models."""
-        result = get_mat_files()
-        assert isinstance(result, list)
-        # Should match get_available_model_files
-        assert result == get_available_model_files()
-
-    def test_get_unique_filename(self, tmp_path: Path) -> None:
-        """Test legacy get_unique_filename function."""
-        result = get_unique_filename("test_base", ".mat", tmp_path)
-        assert isinstance(result, str)
-        assert "test_base" in result
-        assert result.endswith(".mat")
-
-    @pytest.mark.integration
-    def test_gen_track_with_valid_model(self) -> None:
-        """Test gen_track legacy function with valid model."""
-        available_models = get_available_model_files()
-        if not available_models:
-            pytest.skip("No model files available for integration test")
-
-        result = gen_track(available_models[0], 5, 1, seed=True)
-
-        assert result is not None
-        assert len(result) == 1
-        # Check legacy key names
-        track = result[0]
-        assert "time" in track
-        assert "north_ft" in track or "north_position_feet" in track
-        assert "up_ft" in track or "altitude_feet" in track
-
-    def test_gen_track_with_invalid_model(self) -> None:
-        """Test gen_track with non-existent file."""
-        result = gen_track("/nonexistent/model.mat", 5, 1)
-        assert result is None
-
-    @pytest.mark.integration
-    def test_generate_aircraft_tracks_with_valid_model(self) -> None:
-        """Test generate_aircraft_tracks function."""
-        available_models = get_available_model_files()
-        if not available_models:
-            pytest.skip("No model files available for integration test")
-
-        result = generate_aircraft_tracks(available_models[0], 5, 1, use_reproducible_seed=True)
-
-        assert result is not None
-        tracks, session = result
-        assert len(tracks) == 1
-        assert isinstance(session, TrackGenerationSession)
-
-    def test_generate_aircraft_tracks_with_invalid_model(self) -> None:
-        """Test generate_aircraft_tracks with non-existent file."""
-        result = generate_aircraft_tracks("/nonexistent/model.mat", 5, 1)
-        assert result is None
-
-    @pytest.mark.integration
-    def test_save_to_csv_legacy(self, tmp_path: Path) -> None:
-        """Test legacy save_to_csv function."""
-        available_models = get_available_model_files()
-        if not available_models:
-            pytest.skip("No model files available for integration test")
-
-        result = gen_track(available_models[0], 5, 1, seed=True)
-        if result is None:
-            pytest.skip("Could not generate tracks")
-
-        # Temporarily change to tmp_path to test output
-        import os
-
-        original_cwd = os.getcwd()
-        try:
-            os.chdir(tmp_path)
-            os.makedirs("output", exist_ok=True)
-            save_to_csv(result, "test_legacy_csv")
-            # Check file was created
-            csv_files = list(Path("output").glob("*.csv"))
-            assert len(csv_files) >= 1
-        finally:
-            os.chdir(original_cwd)
-
-    @pytest.mark.integration
-    def test_save_as_matlab_legacy(self, tmp_path: Path) -> None:
-        """Test legacy save_as_matlab function."""
-        available_models = get_available_model_files()
-        if not available_models:
-            pytest.skip("No model files available for integration test")
-
-        result = gen_track(available_models[0], 5, 1, seed=True)
-        if result is None:
-            pytest.skip("Could not generate tracks")
-
-        import os
-
-        original_cwd = os.getcwd()
-        try:
-            os.chdir(tmp_path)
-            os.makedirs("output", exist_ok=True)
-            save_as_matlab(result, "test_legacy_mat")
-            mat_files = list(Path("output").glob("*.mat"))
-            assert len(mat_files) >= 1
-        finally:
-            os.chdir(original_cwd)
 
 
 # =============================================================================
